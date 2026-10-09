@@ -1,0 +1,94 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Quản Lý Vai Trò </h1>
+
+  </div>
+
+  <div *ngIf="message" class="alert success">
+    <span>✅ {{ message }}</span>
+  </div>
+  <div *ngIf="errorMessage" class="alert danger">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <!-- Form Tạo Role Mới -->
+  <div class="card form-card">
+    <div class="card-title-box">
+      <h3>➕ Thêm Mới Vai Trò</h3>
+    </div>
+
+    <form (ngSubmit)="onCreateRole()">
+      <div class="form-grid">
+        <div class="form-item">
+          <label>Mã vai trò (Role Code): <span class="required">*</span></label>
+          <input type="text" [(ngModel)]="newRole.roleCode" name="roleCode" required placeholder="VD: ROLE_AUDITOR, ROLE_TELLER..." />
+        </div>
+        <div class="form-item">
+          <label>Tên vai trò (Role Name): <span class="required">*</span></label>
+          <input type="text" [(ngModel)]="newRole.roleName" name="roleName" required placeholder="VD: Kiểm toán viên, Giao dịch viên..." />
+        </div>
+        <div class="form-item">
+          <label>Mô tả chi tiết:</label>
+          <input type="text" [(ngModel)]="newRole.description" name="description" placeholder="Mô tả chức trách vai trò..." />
+        </div>
+      </div>
+
+      <!-- Chọn Permissions -->
+      <div class="form-item perms-section">
+        <label>Gán Danh Sách Quyền Hạn:</label>
+        <div class="perms-grid">
+          <label *ngFor="let p of availablePermissions" class="perm-chip">
+            <input type="checkbox" [checked]="newRole.permissions.includes(p.permissionCode)" (change)="onPermissionToggle(p.permissionCode, $event)" />
+            <span class="chip-text">
+              <strong>{{ p.permissionCode }}</strong>
+              <small>{{ p.permissionName }}</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Lưu Vai Trò</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bảng Danh Sách Roles -->
+  <div class="card table-card">
+    <div class="card-title-box">
+      <h3>Danh Sách Vai Trò Hiện Có</h3>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 180px;">Mã Vai Trò</th>
+            <th>Tên Vai Trò</th>
+            <th>Mô Tả</th>
+            <th>Quyền Được Gán (Permissions)</th>
+            <th style="text-align: right; width: 100px;">Hành Động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of roles">
+            <td><span class="badge role-badge">{{ r.roleCode }}</span></td>
+            <td><strong>{{ r.roleName }}</strong></td>
+            <td>{{ r.description || '-' }}</td>
+            <td>
+              <div class="badge-list">
+                <span *ngFor="let p of r.permissions" class="badge perm-badge">
+                  {{ p.permissionCode }}
+                </span>
+                <span *ngIf="!r.permissions || r.permissions.length === 0" class="text-muted">Chưa gán quyền</span>
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn btn-danger btn-sm" (click)="onDeleteRole(r.roleCode)">Xóa</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

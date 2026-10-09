@@ -1,0 +1,71 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Quản Lý Quyền Hạn</h1>
+<!--    <p class="page-desc">Các mã quyền nguyên tử (Atomic Permissions) được gắn trực tiếp vào các Endpoint API.</p>-->
+  </div>
+
+  <div *ngIf="message" class="alert success">
+    <span>✅ {{ message }}</span>
+  </div>
+  <div *ngIf="errorMessage" class="alert danger">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <!-- Form Tạo Permission -->
+  <div class="card form-card">
+    <div class="card-title-box">
+      <h3>➕ Thêm Mới Quyền Hạn</h3>
+    </div>
+
+    <form (ngSubmit)="onCreatePermission()">
+      <div class="form-grid">
+        <div class="form-item">
+          <label>Mã quyền: <span class="required">*</span></label>
+          <input type="text" [(ngModel)]="newPerm.permissionCode" name="permissionCode" required placeholder="VD: USER_VIEWER, USER_MAKER..." />
+        </div>
+        <div class="form-item">
+          <label>Tên quyền (Permission Name): <span class="required">*</span></label>
+          <input type="text" [(ngModel)]="newPerm.permissionName" name="permissionName" required placeholder="VD: Xem thông tin người dùng..." />
+        </div>
+        <div class="form-item">
+          <label>Mô tả chi tiết:</label>
+          <input type="text" [(ngModel)]="newPerm.description" name="description" placeholder="Mô tả phạm vi chức năng..." />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Lưu Quyền Hạn</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bảng Danh Sách Permissions -->
+  <div class="card table-card">
+    <div class="card-title-box">
+      <h3>Danh Sách Quyền Hạn Trong Hệ Thống</h3>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 220px;">Mã Quyền (Code)</th>
+            <th>Tên Quyền</th>
+            <th>Mô Tả</th>
+            <th style="text-align: right; width: 100px;">Hành Động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of permissions">
+            <td><span class="badge perm-badge">{{ p.permissionCode }}</span></td>
+            <td><strong>{{ p.permissionName }}</strong></td>
+            <td>{{ p.description || '-' }}</td>
+            <td style="text-align: right;">
+              <button class="btn btn-danger btn-sm" (click)="onDeletePermission(p.permissionCode)">Xóa</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

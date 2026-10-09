@@ -1,0 +1,61 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="card-header">
+      <div class="logo-box">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h2>Phân Quyền</h2>
+
+    </div>
+
+    <!-- Thông báo lỗi nếu có -->
+    <div *ngIf="errorMessage" class="alert danger">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <form (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label>Tên đăng nhập (Username):</label>
+        <div class="input-wrapper">
+          <input type="text" [(ngModel)]="userName" name="userName" required placeholder="Nhập tên đăng nhập..." autocomplete="username" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mật khẩu (Password):</label>
+        <div class="input-wrapper">
+          <input type="password" [(ngModel)]="passWord" name="passWord" required placeholder="Nhập mật khẩu..." autocomplete="current-password" />
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="loading" class="btn btn-primary btn-block">
+        <span *ngIf="loading" class="spinner"></span>
+        <span>{{ loading ? 'Đang xác thực...' : 'Đăng Nhập Hệ Thống' }}</span>
+      </button>
+    </form>
+
+    <!-- Hỗ trợ Test Nhanh -->
+<!--    <div class="quick-test-section">-->
+<!--      <div class="quick-test-title">-->
+<!--        <span>TÀI KHOẢN MẪU ĐỂ TEST NHANH</span>-->
+<!--      </div>-->
+<!--      <div class="quick-buttons">-->
+<!--        <button type="button" class="btn-sample btn-admin" (click)="fillQuickAccount('admin', '123')">-->
+<!--          <strong>👑 Admin</strong>-->
+<!--          <small>ROLE_ADMIN (Toàn quyền)</small>-->
+<!--        </button>-->
+<!--        <button type="button" class="btn-sample btn-staff" (click)="fillQuickAccount('staff', '123456')">-->
+<!--          <strong>👤 Staff</strong>-->
+<!--          <small>USER_VIEWER (Chỉ xem)</small>-->
+<!--        </button>-->
+<!--      </div>-->
+<!--    </div>-->
+  </div>
+</div>

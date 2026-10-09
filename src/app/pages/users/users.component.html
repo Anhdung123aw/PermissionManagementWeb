@@ -1,0 +1,154 @@
+<div class="page-container">
+  <!-- Tiêu đề trang -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Quản Lý Người Dùng</h1>
+    </div>
+  </div>
+
+  <!-- Thông báo trạng thái -->
+  <div *ngIf="message" class="alert success">
+    <span>✓ {{ message }}</span>
+  </div>
+  <div *ngIf="errorMessage" class="alert danger">
+    <span>✕ {{ errorMessage }}</span>
+  </div>
+
+  <!-- Card Tạo Người Dùng Mới -->
+  <div class="card form-card">
+    <div class="card-title-box">
+      <h3>Thêm Mới Người Dùng</h3>
+    </div>
+
+    <form (ngSubmit)="onCreateUser()" class="create-form">
+      <div class="form-grid">
+        <div class="form-item">
+          <label>Tên đăng nhập (Username): <span class="required">*</span></label>
+          <input type="text" [(ngModel)]="newUser.userName" name="userName" required placeholder="Nhập tên đăng nhập..." />
+        </div>
+        <div class="form-item">
+          <label>Mật khẩu: <span class="required">*</span></label>
+          <input type="password" [(ngModel)]="newUser.passWord" name="passWord" required placeholder="Nhập mật khẩu..." />
+        </div>
+        <div class="form-item">
+          <label>Email liên hệ:</label>
+          <input type="email" [(ngModel)]="newUser.email" name="email" placeholder="example@vietabank.com.vn" />
+        </div>
+      </div>
+
+      <!-- Gán Roles -->
+      <div class="form-item role-select-section">
+        <label>Gán Vai Trò:</label>
+        <div class="roles-chips">
+          <label *ngFor="let role of availableRoles" class="role-chip">
+            <input type="checkbox" [checked]="newUser.roles.includes(role.roleCode)" (change)="onRoleToggle(role.roleCode, $event)" />
+            <span class="chip-content">
+              <strong>{{ role.roleCode }}</strong>
+              <small>{{ role.roleName }}</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <span>Lưu Người Dùng</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Card Bảng Danh Sách Người Dùng -->
+  <div class="card table-card">
+    <div class="table-header-bar">
+      <div>
+        <h3>Danh Sách Người Dùng</h3>
+        <small class="text-muted">Tổng cộng: {{ totalCount }} người dùng</small>
+      </div>
+
+      <!-- Ô tìm kiếm: Nhấn Enter hoặc nhấn Tìm kiếm -->
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="onSearch()"
+          placeholder="Nhập từ khóa rồi nhấn Enter..."
+        />
+        <button type="button" class="btn btn-primary btn-sm btn-search" (click)="onSearch()">
+          Tìm
+        </button>
+        <button *ngIf="searchTerm" type="button" class="btn btn-secondary btn-sm" (click)="clearSearch()">
+          Xóa
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+        <tr>
+          <th style="width: 70px;">ID</th>
+          <th>Tên Đăng Nhập</th>
+          <th>Email</th>
+          <th>Vai Trò (Roles)</th>
+          <th style="text-align: right; width: 120px;">Hành Động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let u of users">
+          <td><span class="id-badge">#{{ u.id }}</span></td>
+          <td>
+            <div class="user-cell">
+              <span class="avatar-circle">{{ u.userName.charAt(0).toUpperCase() }}</span>
+              <strong>{{ u.userName }}</strong>
+            </div>
+          </td>
+          <td>{{ u.email || '-' }}</td>
+          <td>
+            <div class="badge-list">
+              <span *ngFor="let r of u.roles" class="badge role-badge">
+                {{ r.roleCode }}
+              </span>
+              <span *ngIf="!u.roles || u.roles.length === 0" class="text-muted">Chưa gán vai trò</span>
+            </div>
+          </td>
+          <td style="text-align: right;">
+            <button class="btn btn-danger btn-sm" (click)="onDeleteUser(u.id, u.userName)">
+              <span>Xóa</span>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="users.length === 0">
+          <td colspan="5" class="empty-state">
+            <span *ngIf="loading">Đang tải dữ liệu từ máy chủ...</span>
+            <span *ngIf="!loading">Không tìm thấy người dùng nào phù hợp.</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Thanh Phân Trang (Pagination Controls) -->
+    <div class="pagination-bar" *ngIf="totalCount > 0">
+      <div class="pagination-info">
+        <span>Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, totalCount) }} của <strong>{{ totalCount }}</strong></span>
+        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="page-size-select">
+          <option [value]="5">5 / trang</option>
+          <option [value]="10">10 / trang</option>
+          <option [value]="20">20 / trang</option>
+          <option [value]="50">50 / trang</option>
+        </select>
+      </div>
+
+      <div class="pagination-actions">
+        <button class="page-btn" [disabled]="currentPage <= 1" (click)="onPageChange(currentPage - 1)">
+          ‹ Trước
+        </button>
+        <span class="page-current">Trang <strong>{{ currentPage }}</strong> / {{ totalPages }}</span>
+        <button class="page-btn" [disabled]="currentPage >= totalPages" (click)="onPageChange(currentPage + 1)">
+          Sau ›
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
