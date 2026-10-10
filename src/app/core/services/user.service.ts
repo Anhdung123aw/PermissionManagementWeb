@@ -1,13 +1,13 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  ApiResponse,
+import {ApiResponse,
   User,
   UserCreationRequest,
   SearchRequest,
   SearchResponse,
   UserFilterRequest,
+  UserUpdateRequest
 } from '../models/api.model';
 
 @Injectable({
@@ -23,6 +23,10 @@ export class UserService {
 
   createUser(request: UserCreationRequest): Observable<ApiResponse<User>> {
     return this.http.post<ApiResponse<User>>(this.apiUrl, request);
+  }
+
+  updateUser(userId: number, request: UserUpdateRequest): Observable<ApiResponse<User>> {
+    return this.http.put<ApiResponse<User>>(`${this.apiUrl}/${userId}`, request);
   }
 
   deleteUser(userId: number): Observable<ApiResponse<void>> {

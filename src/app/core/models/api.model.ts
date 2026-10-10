@@ -68,3 +68,28 @@ export interface UserFilterRequest {
   keyword?: string;
 }
 
+
+export interface RoleFilterRequest {
+  keyword?: string;
+}
+
+export interface PermissionFilterRequest {
+  keyword?: string;
+}
+
+export interface UserUpdateRequest {
+  passWord?: string;
+  email?: string;
+  roles?: string[];
+}
+
+export interface RoleUpdateRequest {
+  roleName?: string;
+  description?: string;
+  permissions?: string[];
+}
+
+export interface PermissionUpdateRequest {
+  permissionName?: string;
+  description?: string;
+}

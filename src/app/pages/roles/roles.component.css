@@ -67,44 +67,7 @@
   margin-bottom: 20px;
 }
 
-.perms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
-  margin-top: 6px;
-}
 
-.perm-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #f8fafc;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.perm-chip:hover {
-  background: #ffffff;
-  border-color: #a7f3d0;
-}
-
-.chip-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.chip-text strong {
-  font-size: 13px;
-  color: #065f46;
-}
-
-.chip-text small {
-  font-size: 11px;
-  color: #64748b;
-}
 
 .form-actions {
   display: flex;

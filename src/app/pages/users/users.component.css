@@ -81,44 +81,7 @@
   margin-bottom: 20px;
 }
 
-.roles-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 6px;
-}
 
-.role-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #f8fafc;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.role-chip:hover {
-  background: #ffffff;
-  border-color: #93c5fd;
-}
-
-.chip-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.chip-content strong {
-  font-size: 13px;
-  color: #1e293b;
-}
-
-.chip-content small {
-  font-size: 11px;
-  color: #64748b;
-}
 
 .form-actions {
   display: flex;
@@ -259,3 +222,5 @@
   font-size: 13px;
   border-radius: 8px;
 }
+
+

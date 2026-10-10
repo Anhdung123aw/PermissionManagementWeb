@@ -1,52 +1,86 @@
 <div class="page-container">
-  <!-- Tiêu đề trang -->
   <div class="page-header">
-    <div>
-      <h1 class="page-title">Quản Lý Người Dùng</h1>
-    </div>
+    <h1 class="page-title">Quản Lý Người Dùng</h1>
   </div>
 
-  <!-- Thông báo trạng thái -->
-  <div *ngIf="message" class="alert success">
-    <span>✓ {{ message }}</span>
-  </div>
-  <div *ngIf="errorMessage" class="alert danger">
-    <span>✕ {{ errorMessage }}</span>
-  </div>
-
-  <!-- Card Tạo Người Dùng Mới -->
+  <!-- Form Tạo Người Dùng Mới -->
   <div class="card form-card">
     <div class="card-title-box">
-      <h3>Thêm Mới Người Dùng</h3>
+      <h3>Tạo Người Dùng Mới</h3>
     </div>
 
-    <form (ngSubmit)="onCreateUser()" class="create-form">
+    <form (ngSubmit)="onCreateUser()">
       <div class="form-grid">
         <div class="form-item">
-          <label>Tên đăng nhập (Username): <span class="required">*</span></label>
-          <input type="text" [(ngModel)]="newUser.userName" name="userName" required placeholder="Nhập tên đăng nhập..." />
+          <label>Tên đăng nhập: <span class="required">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="newUser.userName"
+            name="userName"
+            required
+            placeholder="Nhập tên đăng nhập..."
+          />
         </div>
         <div class="form-item">
           <label>Mật khẩu: <span class="required">*</span></label>
-          <input type="password" [(ngModel)]="newUser.passWord" name="passWord" required placeholder="Nhập mật khẩu..." />
+          <input
+            type="password"
+            [(ngModel)]="newUser.passWord"
+            name="passWord"
+            required
+            placeholder="Nhập mật khẩu..."
+          />
         </div>
         <div class="form-item">
-          <label>Email liên hệ:</label>
-          <input type="email" [(ngModel)]="newUser.email" name="email" placeholder="example@vietabank.com.vn" />
+          <label>Email:</label>
+          <input
+            type="email"
+            [(ngModel)]="newUser.email"
+            name="email"
+            placeholder="VD: user@bank.com..."
+          />
         </div>
       </div>
 
-      <!-- Gán Roles -->
+      <!-- Khung Chọn Nhiều Vai Trò (Multi-select) -->
       <div class="form-item role-select-section">
-        <label>Gán Vai Trò:</label>
-        <div class="roles-chips">
-          <label *ngFor="let role of availableRoles" class="role-chip">
-            <input type="checkbox" [checked]="newUser.roles.includes(role.roleCode)" (change)="onRoleToggle(role.roleCode, $event)" />
-            <span class="chip-content">
-              <strong>{{ role.roleCode }}</strong>
-              <small>{{ role.roleName }}</small>
-            </span>
-          </label>
+        <label>Gán Vai Trò (Roles):</label>
+        <div class="custom-select-container">
+          <div class="selected-input-box" (click)="toggleRoleDropdown($event)">
+            <div class="selected-tags">
+              <span *ngFor="let r of newUser.roles" class="tag-badge">
+                {{ r }}
+                <span class="remove-tag" (click)="removeRole(r, $event)">✕</span>
+              </span>
+              <span *ngIf="newUser.roles.length === 0" class="placeholder-text">
+                Nhấn để chọn một hoặc nhiều vai trò...
+              </span>
+            </div>
+            <span class="dropdown-arrow" [class.open]="isRoleDropdownOpen">▾</span>
+          </div>
+
+          <div class="dropdown-menu-list" *ngIf="isRoleDropdownOpen" (click)="$event.stopPropagation()">
+            <div 
+              *ngFor="let role of availableRoles" 
+              class="dropdown-item" 
+              [class.selected]="newUser.roles.includes(role.roleCode)"
+              (click)="onRoleToggle(role.roleCode, $event)"
+            >
+              <input 
+                type="checkbox" 
+                [checked]="newUser.roles.includes(role.roleCode)" 
+                (click)="$event.stopPropagation()"
+                (change)="onRoleToggle(role.roleCode, $event)" 
+              />
+              <div class="item-text">
+                <strong>{{ role.roleCode }}</strong>
+                <small>{{ role.roleName }}</small>
+              </div>
+            </div>
+            <div *ngIf="availableRoles.length === 0" class="dropdown-empty">
+              Chưa có vai trò nào trong hệ thống
+            </div>
+          </div>
         </div>
       </div>
 
@@ -66,7 +100,6 @@
         <small class="text-muted">Tổng cộng: {{ totalCount }} người dùng</small>
       </div>
 
-      <!-- Ô tìm kiếm: Nhấn Enter hoặc nhấn Tìm kiếm -->
       <div class="search-box">
         <input
           type="text"
@@ -91,7 +124,7 @@
           <th>Tên Đăng Nhập</th>
           <th>Email</th>
           <th>Vai Trò (Roles)</th>
-          <th style="text-align: right; width: 120px;">Hành Động</th>
+          <th style="text-align: right; width: 100px;">Thao Tác</th>
         </tr>
         </thead>
         <tbody>
@@ -113,9 +146,32 @@
             </div>
           </td>
           <td style="text-align: right;">
-            <button class="btn btn-danger btn-sm" (click)="onDeleteUser(u.id, u.userName)">
-              <span>Xóa</span>
-            </button>
+            <!-- ACTION MENU 3 CHẤM ĐỨNG (⋮) -->
+            <div class="action-menu-wrap">
+              <button type="button" class="btn-action-dots" (click)="toggleActionMenu(u.id, $event)" title="Thao tác">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="19" r="2"></circle>
+                </svg>
+              </button>
+
+              <div class="action-dropdown" *ngIf="activeMenuId === u.id">
+                <button type="button" class="action-item" (click)="openDetail(u, $event)">
+                  <span class="action-icon">👁️</span>
+                  <span>Xem chi tiết</span>
+                </button>
+                <button type="button" class="action-item" (click)="openEdit(u, $event)">
+                  <span class="action-icon">✏️</span>
+                  <span>Chỉnh sửa</span>
+                </button>
+                <div class="action-divider"></div>
+                <button type="button" class="action-item action-item-danger" (click)="openDeleteModal(u.id, u.userName, $event)">
+                  <span class="action-icon">🗑️</span>
+                  <span>Xóa</span>
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
         <tr *ngIf="users.length === 0">
@@ -128,7 +184,7 @@
       </table>
     </div>
 
-    <!-- Thanh Phân Trang (Pagination Controls) -->
+    <!-- Thanh Phân Trang -->
     <div class="pagination-bar" *ngIf="totalCount > 0">
       <div class="pagination-info">
         <span>Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, totalCount) }} của <strong>{{ totalCount }}</strong></span>
@@ -147,6 +203,217 @@
         <span class="page-current">Trang <strong>{{ currentPage }}</strong> / {{ totalPages }}</span>
         <button class="page-btn" [disabled]="currentPage >= totalPages" (click)="onPageChange(currentPage + 1)">
           Sau ›
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL XEM CHI TIẾT NGƯỜI DÙNG -->
+  <div class="modal-overlay" *ngIf="detailUser" (click)="closeDetailModal()">
+    <div class="modal-dialog modal-dialog-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-info">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Chi Tiết Người Dùng</h3>
+          <small class="text-muted">Thông tin tài khoản và danh sách vai trò</small>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-row">
+            <span class="detail-label">ID Người dùng</span>
+            <span class="detail-val"><span class="id-badge">#{{ detailUser.id }}</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Tên đăng nhập</span>
+            <div class="user-cell" style="margin-top: 2px;">
+              <span class="avatar-circle">{{ detailUser.userName.charAt(0).toUpperCase() }}</span>
+              <strong style="font-size: 15px;">{{ detailUser.userName }}</strong>
+            </div>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Địa chỉ Email</span>
+            <span class="detail-val">{{ detailUser.email || 'Chưa cập nhật email' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Vai trò được phân quyền (Roles)</span>
+            <div class="badge-list" style="margin-top: 4px;">
+              <span *ngFor="let r of detailUser.roles" class="badge role-badge" [title]="r.description || ''">
+                {{ r.roleCode }} - {{ r.roleName }}
+              </span>
+              <span *ngIf="!detailUser.roles || detailUser.roles.length === 0" class="text-muted">
+                Tài khoản chưa được phân vai trò nào
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Đóng</button>
+        <button type="button" class="btn btn-primary" (click)="openEdit(detailUser); closeDetailModal()">
+          Chỉnh Sửa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL CHỈNH SỬA NGƯỜI DÙNG -->
+  <div class="modal-overlay" *ngIf="editingUser" (click)="closeEditModal()">
+    <div class="modal-dialog modal-dialog-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-edit">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Chỉnh Sửa Người Dùng</h3>
+          <small class="text-muted">Cập nhật mật khẩu, email và vai trò</small>
+        </div>
+      </div>
+      <form (ngSubmit)="onUpdateUser()">
+        <div class="modal-body">
+          <div class="form-grid" style="grid-template-columns: 1fr;">
+            <div class="form-item">
+              <label>Tên đăng nhập:</label>
+              <input type="text" [value]="editingUser.userName" disabled style="background: #f8fafc; color: #64748b; cursor: not-allowed;" />
+            </div>
+            <div class="form-item">
+              <label>Mật khẩu mới:</label>
+              <input type="password" [(ngModel)]="editingUser.passWord" name="editPassword" placeholder="Để trống nếu không muốn đổi mật khẩu" />
+            </div>
+            <div class="form-item">
+              <label>Email:</label>
+              <input type="email" [(ngModel)]="editingUser.email" name="editEmail" placeholder="VD: user@bank.com" />
+            </div>
+
+            <!-- Multi-select vai trò khi sửa -->
+            <div class="form-item role-select-section">
+              <label>Gán Vai Trò (Roles):</label>
+              <div class="custom-select-container">
+                <div class="selected-input-box" (click)="toggleEditRoleDropdown($event)">
+                  <div class="selected-tags">
+                    <span *ngFor="let r of editingUser.roles" class="tag-badge">
+                      {{ r }}
+                      <span class="remove-tag" (click)="removeEditRole(r, $event)">✕</span>
+                    </span>
+                    <span *ngIf="editingUser.roles.length === 0" class="placeholder-text">
+                      Chọn vai trò...
+                    </span>
+                  </div>
+                  <span class="dropdown-arrow" [class.open]="isEditRoleDropdownOpen">▾</span>
+                </div>
+
+                <div class="dropdown-menu-list" *ngIf="isEditRoleDropdownOpen" (click)="$event.stopPropagation()">
+                  <div 
+                    *ngFor="let role of availableRoles" 
+                    class="dropdown-item" 
+                    [class.selected]="editingUser.roles.includes(role.roleCode)"
+                    (click)="onEditRoleToggle(role.roleCode, $event)"
+                  >
+                    <input 
+                      type="checkbox" 
+                      [checked]="editingUser.roles.includes(role.roleCode)" 
+                      (click)="$event.stopPropagation()"
+                      (change)="onEditRoleToggle(role.roleCode, $event)" 
+                    />
+                    <div class="item-text">
+                      <strong>{{ role.roleCode }}</strong>
+                      <small>{{ role.roleName }}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" (click)="closeEditModal()">Hủy bỏ</button>
+          <button type="submit" class="btn btn-primary" style="padding: 9px 20px;">Lưu Thay Đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL XÁC NHẬN XÓA -->
+  <div class="modal-overlay" *ngIf="userToDelete" (click)="closeDeleteModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-danger">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18m-2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Xác nhận xóa người dùng</h3>
+        </div>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa người dùng <strong>"{{ userToDelete.username }}"</strong> (ID: {{ userToDelete.id }})?
+        <span class="modal-warning-text">Hành động này sẽ xóa vĩnh viễn và không thể hoàn tác!</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" (click)="closeDeleteModal()">Hủy bỏ</button>
+        <button type="button" class="btn-modal-delete" (click)="confirmDeleteUser()">Đồng ý xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP THÔNG BÁO LỖI -->
+  <div class="modal-overlay" *ngIf="errorMessage" (click)="errorMessage = ''">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-danger">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Thông Báo Hệ Thống</h3>
+        </div>
+      </div>
+      <div class="modal-body" style="font-size: 15px; color: #1e293b; font-weight: 500;">
+        {{ errorMessage }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" style="padding: 9px 24px;" (click)="errorMessage = ''">
+          Đã hiểu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP THÔNG BÁO THÀNH CÔNG -->
+  <div class="modal-overlay" *ngIf="message" (click)="message = ''">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-success">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Thành Công</h3>
+        </div>
+      </div>
+      <div class="modal-body" style="font-size: 15px; color: #1e293b; font-weight: 500;">
+        {{ message }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" style="padding: 9px 24px;" (click)="message = ''">
+          Đóng
         </button>
       </div>
     </div>

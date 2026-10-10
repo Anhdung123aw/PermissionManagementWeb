@@ -1,49 +1,69 @@
 <div class="page-container">
   <div class="page-header">
-    <h1 class="page-title">Quản Lý Vai Trò </h1>
-
+    <h1 class="page-title">Quản Lý Vai Trò</h1>
   </div>
 
-  <div *ngIf="message" class="alert success">
-    <span>✅ {{ message }}</span>
-  </div>
-  <div *ngIf="errorMessage" class="alert danger">
-    <span>⚠️ {{ errorMessage }}</span>
-  </div>
-
-  <!-- Form Tạo Role Mới -->
+  <!-- Form Tạo Role -->
   <div class="card form-card">
     <div class="card-title-box">
-      <h3>➕ Thêm Mới Vai Trò</h3>
+      <h3>Tạo Vai Trò Mới</h3>
     </div>
 
     <form (ngSubmit)="onCreateRole()">
       <div class="form-grid">
         <div class="form-item">
           <label>Mã vai trò (Role Code): <span class="required">*</span></label>
-          <input type="text" [(ngModel)]="newRole.roleCode" name="roleCode" required placeholder="VD: ROLE_AUDITOR, ROLE_TELLER..." />
+          <input type="text" [(ngModel)]="newRole.roleCode" name="roleCode" required placeholder="VD: ROLE_MANAGER, ROLE_TELLER..." />
         </div>
         <div class="form-item">
           <label>Tên vai trò (Role Name): <span class="required">*</span></label>
-          <input type="text" [(ngModel)]="newRole.roleName" name="roleName" required placeholder="VD: Kiểm toán viên, Giao dịch viên..." />
+          <input type="text" [(ngModel)]="newRole.roleName" name="roleName" required placeholder="VD: Trưởng phòng giao dịch..." />
         </div>
         <div class="form-item">
-          <label>Mô tả chi tiết:</label>
-          <input type="text" [(ngModel)]="newRole.description" name="description" placeholder="Mô tả chức trách vai trò..." />
+          <label>Mô tả vai trò:</label>
+          <input type="text" [(ngModel)]="newRole.description" name="description" placeholder="Mô tả chức năng nhiệm vụ..." />
         </div>
       </div>
 
-      <!-- Chọn Permissions -->
-      <div class="form-item perms-section">
-        <label>Gán Danh Sách Quyền Hạn:</label>
-        <div class="perms-grid">
-          <label *ngFor="let p of availablePermissions" class="perm-chip">
-            <input type="checkbox" [checked]="newRole.permissions.includes(p.permissionCode)" (change)="onPermissionToggle(p.permissionCode, $event)" />
-            <span class="chip-text">
-              <strong>{{ p.permissionCode }}</strong>
-              <small>{{ p.permissionName }}</small>
-            </span>
-          </label>
+      <!-- Khung Chọn Nhiều Permissions -->
+      <div class="form-item perm-select-section">
+        <label>Gán Quyền Hạn (Permissions):</label>
+        <div class="custom-select-container">
+          <div class="selected-input-box" (click)="togglePermDropdown($event)">
+            <div class="selected-tags">
+              <span *ngFor="let p of newRole.permissions" class="tag-badge selected-tag-perm">
+                {{ p }}
+                <span class="remove-tag" (click)="removePermission(p, $event)">✕</span>
+              </span>
+              <span *ngIf="newRole.permissions.length === 0" class="placeholder-text">
+                Nhấn để chọn một hoặc nhiều quyền hạn...
+              </span>
+            </div>
+            <span class="dropdown-arrow" [class.open]="isPermDropdownOpen">▾</span>
+          </div>
+
+          <div class="dropdown-menu-list" *ngIf="isPermDropdownOpen" (click)="$event.stopPropagation()">
+            <div 
+              *ngFor="let p of availablePermissions" 
+              class="dropdown-item" 
+              [class.selected]="newRole.permissions.includes(p.permissionCode)"
+              (click)="onPermissionToggle(p.permissionCode, $event)"
+            >
+              <input 
+                type="checkbox" 
+                [checked]="newRole.permissions.includes(p.permissionCode)" 
+                (click)="$event.stopPropagation()"
+                (change)="onPermissionToggle(p.permissionCode, $event)" 
+              />
+              <div class="item-text">
+                <strong>{{ p.permissionCode }}</strong>
+                <small>{{ p.permissionName }}</small>
+              </div>
+            </div>
+            <div *ngIf="availablePermissions.length === 0" class="dropdown-empty">
+              Chưa có quyền hạn nào trong hệ thống
+            </div>
+          </div>
         </div>
       </div>
 
@@ -55,8 +75,26 @@
 
   <!-- Bảng Danh Sách Roles -->
   <div class="card table-card">
-    <div class="card-title-box">
-      <h3>Danh Sách Vai Trò Hiện Có</h3>
+    <div class="table-header-bar">
+      <div>
+        <h3>Danh Sách Vai Trò Hiện Có</h3>
+        <small class="text-muted">Tổng cộng: {{ totalCount }} vai trò</small>
+      </div>
+
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="onSearch()"
+          placeholder="Tìm theo mã, tên vai trò..."
+        />
+        <button type="button" class="btn btn-primary btn-sm btn-search" (click)="onSearch()">
+          Tìm
+        </button>
+        <button *ngIf="searchTerm" type="button" class="btn btn-secondary btn-sm" (click)="clearSearch()">
+          Xóa
+        </button>
+      </div>
     </div>
 
     <div class="table-responsive">
@@ -67,7 +105,7 @@
             <th>Tên Vai Trò</th>
             <th>Mô Tả</th>
             <th>Quyền Được Gán (Permissions)</th>
-            <th style="text-align: right; width: 100px;">Hành Động</th>
+            <th style="text-align: right; width: 100px;">Thao Tác</th>
           </tr>
         </thead>
         <tbody>
@@ -84,11 +122,273 @@
               </div>
             </td>
             <td style="text-align: right;">
-              <button class="btn btn-danger btn-sm" (click)="onDeleteRole(r.roleCode)">Xóa</button>
+              <!-- ACTION MENU 3 CHẤM ĐỨNG (⋮) -->
+              <div class="action-menu-wrap">
+                <button type="button" class="btn-action-dots" (click)="toggleActionMenu(r.roleCode, $event)" title="Thao tác">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <circle cx="12" cy="19" r="2"></circle>
+                  </svg>
+                </button>
+
+                <div class="action-dropdown" *ngIf="activeMenuId === r.roleCode">
+                  <button type="button" class="action-item" (click)="openDetail(r, $event)">
+                    <span class="action-icon">👁️</span>
+                    <span>Xem chi tiết</span>
+                  </button>
+                  <button type="button" class="action-item" (click)="openEdit(r, $event)">
+                    <span class="action-icon">✏️</span>
+                    <span>Chỉnh sửa</span>
+                  </button>
+                  <div class="action-divider"></div>
+                  <button type="button" class="action-item action-item-danger" (click)="openDeleteModal(r.roleCode, $event)">
+                    <span class="action-icon">🗑️</span>
+                    <span>Xóa</span>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="roles.length === 0">
+            <td colspan="5" class="empty-state">
+              <span *ngIf="loading">Đang tải dữ liệu từ máy chủ...</span>
+              <span *ngIf="!loading">Không tìm thấy vai trò nào phù hợp.</span>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Thanh Phân Trang -->
+    <div class="pagination-bar" *ngIf="totalCount > 0">
+      <div class="pagination-info">
+        <span>Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, totalCount) }} của <strong>{{ totalCount }}</strong></span>
+        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="page-size-select">
+          <option [value]="5">5 / trang</option>
+          <option [value]="10">10 / trang</option>
+          <option [value]="20">20 / trang</option>
+          <option [value]="50">50 / trang</option>
+        </select>
+      </div>
+
+      <div class="pagination-actions">
+        <button class="page-btn" [disabled]="currentPage <= 1" (click)="onPageChange(currentPage - 1)">
+          ‹ Trước
+        </button>
+        <span class="page-current">Trang <strong>{{ currentPage }}</strong> / {{ totalPages }}</span>
+        <button class="page-btn" [disabled]="currentPage >= totalPages" (click)="onPageChange(currentPage + 1)">
+          Sau ›
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL XEM CHI TIẾT VAI TRÒ -->
+  <div class="modal-overlay" *ngIf="detailRole" (click)="closeDetailModal()">
+    <div class="modal-dialog modal-dialog-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-info">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Chi Tiết Vai Trò</h3>
+          <small class="text-muted">Thông tin vai trò và danh sách quyền hạn đi kèm</small>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-row">
+            <span class="detail-label">Mã vai trò (Role Code)</span>
+            <span class="detail-val"><span class="badge role-badge">{{ detailRole.roleCode }}</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Tên vai trò (Role Name)</span>
+            <span class="detail-val"><strong style="font-size: 15px;">{{ detailRole.roleName }}</strong></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Mô tả</span>
+            <span class="detail-val">{{ detailRole.description || 'Không có mô tả' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Quyền hạn được gán (Permissions)</span>
+            <div class="badge-list" style="margin-top: 4px;">
+              <span *ngFor="let p of detailRole.permissions" class="badge perm-badge" [title]="p.description || ''">
+                {{ p.permissionCode }} - {{ p.permissionName }}
+              </span>
+              <span *ngIf="!detailRole.permissions || detailRole.permissions.length === 0" class="text-muted">
+                Vai trò chưa được cấp quyền hạn nào
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Đóng</button>
+        <button type="button" class="btn btn-primary" (click)="openEdit(detailRole); closeDetailModal()">
+          Chỉnh Sửa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL CHỈNH SỬA VAI TRÒ -->
+  <div class="modal-overlay" *ngIf="editingRole" (click)="closeEditModal()">
+    <div class="modal-dialog modal-dialog-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-edit">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Chỉnh Sửa Vai Trò</h3>
+          <small class="text-muted">Cập nhật tên, mô tả và quyền hạn</small>
+        </div>
+      </div>
+      <form (ngSubmit)="onUpdateRole()">
+        <div class="modal-body">
+          <div class="form-grid" style="grid-template-columns: 1fr;">
+            <div class="form-item">
+              <label>Mã vai trò:</label>
+              <input type="text" [value]="editingRole.roleCode" disabled style="background: #f8fafc; color: #64748b; cursor: not-allowed;" />
+            </div>
+            <div class="form-item">
+              <label>Tên vai trò: <span class="required">*</span></label>
+              <input type="text" [(ngModel)]="editingRole.roleName" name="editRoleName" required placeholder="Nhập tên vai trò..." />
+            </div>
+            <div class="form-item">
+              <label>Mô tả vai trò:</label>
+              <input type="text" [(ngModel)]="editingRole.description" name="editRoleDesc" placeholder="Nhập mô tả..." />
+            </div>
+
+            <!-- Multi-select quyền hạn khi sửa -->
+            <div class="form-item perm-select-section">
+              <label>Gán Quyền Hạn (Permissions):</label>
+              <div class="custom-select-container">
+                <div class="selected-input-box" (click)="toggleEditPermDropdown($event)">
+                  <div class="selected-tags">
+                    <span *ngFor="let p of editingRole.permissions" class="tag-badge selected-tag-perm">
+                      {{ p }}
+                      <span class="remove-tag" (click)="removeEditPerm(p, $event)">✕</span>
+                    </span>
+                    <span *ngIf="editingRole.permissions.length === 0" class="placeholder-text">
+                      Chọn quyền hạn...
+                    </span>
+                  </div>
+                  <span class="dropdown-arrow" [class.open]="isEditPermDropdownOpen">▾</span>
+                </div>
+
+                <div class="dropdown-menu-list" *ngIf="isEditPermDropdownOpen" (click)="$event.stopPropagation()">
+                  <div 
+                    *ngFor="let p of availablePermissions" 
+                    class="dropdown-item" 
+                    [class.selected]="editingRole.permissions.includes(p.permissionCode)"
+                    (click)="onEditPermToggle(p.permissionCode, $event)"
+                  >
+                    <input 
+                      type="checkbox" 
+                      [checked]="editingRole.permissions.includes(p.permissionCode)" 
+                      (click)="$event.stopPropagation()"
+                      (change)="onEditPermToggle(p.permissionCode, $event)" 
+                    />
+                    <div class="item-text">
+                      <strong>{{ p.permissionCode }}</strong>
+                      <small>{{ p.permissionName }}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" (click)="closeEditModal()">Hủy bỏ</button>
+          <button type="submit" class="btn btn-primary" style="padding: 9px 20px;">Lưu Thay Đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL XÁC NHẬN XÓA VAI TRÒ -->
+  <div class="modal-overlay" *ngIf="roleToDelete" (click)="closeDeleteModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-danger">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18m-2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Xác nhận xóa vai trò</h3>
+        </div>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa vai trò <strong>"{{ roleToDelete }}"</strong>?
+        <span class="modal-warning-text">Hành động này có thể ảnh hưởng đến người dùng đang mang vai trò này!</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" (click)="closeDeleteModal()">Hủy bỏ</button>
+        <button type="button" class="btn-modal-delete" (click)="confirmDeleteRole()">Đồng ý xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP THÔNG BÁO LỖI -->
+  <div class="modal-overlay" *ngIf="errorMessage" (click)="errorMessage = ''">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-danger">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Thông Báo Hệ Thống</h3>
+        </div>
+      </div>
+      <div class="modal-body" style="font-size: 15px; color: #1e293b; font-weight: 500;">
+        {{ errorMessage }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" style="padding: 9px 24px;" (click)="errorMessage = ''">
+          Đã hiểu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP THÔNG BÁO THÀNH CÔNG -->
+  <div class="modal-overlay" *ngIf="message" (click)="message = ''">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon-success">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="modal-title-wrap">
+          <h3>Thành Công</h3>
+        </div>
+      </div>
+      <div class="modal-body" style="font-size: 15px; color: #1e293b; font-weight: 500;">
+        {{ message }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" style="padding: 9px 24px;" (click)="message = ''">
+          Đóng
+        </button>
+      </div>
     </div>
   </div>
 </div>
