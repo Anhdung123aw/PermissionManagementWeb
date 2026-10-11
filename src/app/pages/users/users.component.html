@@ -44,7 +44,7 @@
 
       <!-- Khung Chọn Nhiều Vai Trò (Multi-select) -->
       <div class="form-item role-select-section">
-        <label>Gán Vai Trò (Roles):</label>
+        <label>Gán Vai Trò:</label>
         <div class="custom-select-container">
           <div class="selected-input-box" (click)="toggleRoleDropdown($event)">
             <div class="selected-tags">
@@ -60,17 +60,17 @@
           </div>
 
           <div class="dropdown-menu-list" *ngIf="isRoleDropdownOpen" (click)="$event.stopPropagation()">
-            <div 
-              *ngFor="let role of availableRoles" 
-              class="dropdown-item" 
+            <div
+              *ngFor="let role of availableRoles"
+              class="dropdown-item"
               [class.selected]="newUser.roles.includes(role.roleCode)"
               (click)="onRoleToggle(role.roleCode, $event)"
             >
-              <input 
-                type="checkbox" 
-                [checked]="newUser.roles.includes(role.roleCode)" 
+              <input
+                type="checkbox"
+                [checked]="newUser.roles.includes(role.roleCode)"
                 (click)="$event.stopPropagation()"
-                (change)="onRoleToggle(role.roleCode, $event)" 
+                (change)="onRoleToggle(role.roleCode, $event)"
               />
               <div class="item-text">
                 <strong>{{ role.roleCode }}</strong>
@@ -312,17 +312,17 @@
                 </div>
 
                 <div class="dropdown-menu-list" *ngIf="isEditRoleDropdownOpen" (click)="$event.stopPropagation()">
-                  <div 
-                    *ngFor="let role of availableRoles" 
-                    class="dropdown-item" 
+                  <div
+                    *ngFor="let role of availableRoles"
+                    class="dropdown-item"
                     [class.selected]="editingUser.roles.includes(role.roleCode)"
                     (click)="onEditRoleToggle(role.roleCode, $event)"
                   >
-                    <input 
-                      type="checkbox" 
-                      [checked]="editingUser.roles.includes(role.roleCode)" 
+                    <input
+                      type="checkbox"
+                      [checked]="editingUser.roles.includes(role.roleCode)"
                       (click)="$event.stopPropagation()"
-                      (change)="onEditRoleToggle(role.roleCode, $event)" 
+                      (change)="onEditRoleToggle(role.roleCode, $event)"
                     />
                     <div class="item-text">
                       <strong>{{ role.roleCode }}</strong>

@@ -12,11 +12,11 @@
     <form (ngSubmit)="onCreateRole()">
       <div class="form-grid">
         <div class="form-item">
-          <label>Mã vai trò (Role Code): <span class="required">*</span></label>
+          <label>Mã vai trò: <span class="required">*</span></label>
           <input type="text" [(ngModel)]="newRole.roleCode" name="roleCode" required placeholder="VD: ROLE_MANAGER, ROLE_TELLER..." />
         </div>
         <div class="form-item">
-          <label>Tên vai trò (Role Name): <span class="required">*</span></label>
+          <label>Tên vai trò: <span class="required">*</span></label>
           <input type="text" [(ngModel)]="newRole.roleName" name="roleName" required placeholder="VD: Trưởng phòng giao dịch..." />
         </div>
         <div class="form-item">
@@ -27,7 +27,7 @@
 
       <!-- Khung Chọn Nhiều Permissions -->
       <div class="form-item perm-select-section">
-        <label>Gán Quyền Hạn (Permissions):</label>
+        <label>Gán Quyền Hạn:</label>
         <div class="custom-select-container">
           <div class="selected-input-box" (click)="togglePermDropdown($event)">
             <div class="selected-tags">
@@ -43,17 +43,17 @@
           </div>
 
           <div class="dropdown-menu-list" *ngIf="isPermDropdownOpen" (click)="$event.stopPropagation()">
-            <div 
-              *ngFor="let p of availablePermissions" 
-              class="dropdown-item" 
+            <div
+              *ngFor="let p of availablePermissions"
+              class="dropdown-item"
               [class.selected]="newRole.permissions.includes(p.permissionCode)"
               (click)="onPermissionToggle(p.permissionCode, $event)"
             >
-              <input 
-                type="checkbox" 
-                [checked]="newRole.permissions.includes(p.permissionCode)" 
+              <input
+                type="checkbox"
+                [checked]="newRole.permissions.includes(p.permissionCode)"
                 (click)="$event.stopPropagation()"
-                (change)="onPermissionToggle(p.permissionCode, $event)" 
+                (change)="onPermissionToggle(p.permissionCode, $event)"
               />
               <div class="item-text">
                 <strong>{{ p.permissionCode }}</strong>
@@ -285,17 +285,17 @@
                 </div>
 
                 <div class="dropdown-menu-list" *ngIf="isEditPermDropdownOpen" (click)="$event.stopPropagation()">
-                  <div 
-                    *ngFor="let p of availablePermissions" 
-                    class="dropdown-item" 
+                  <div
+                    *ngFor="let p of availablePermissions"
+                    class="dropdown-item"
                     [class.selected]="editingRole.permissions.includes(p.permissionCode)"
                     (click)="onEditPermToggle(p.permissionCode, $event)"
                   >
-                    <input 
-                      type="checkbox" 
-                      [checked]="editingRole.permissions.includes(p.permissionCode)" 
+                    <input
+                      type="checkbox"
+                      [checked]="editingRole.permissions.includes(p.permissionCode)"
                       (click)="$event.stopPropagation()"
-                      (change)="onEditPermToggle(p.permissionCode, $event)" 
+                      (change)="onEditPermToggle(p.permissionCode, $event)"
                     />
                     <div class="item-text">
                       <strong>{{ p.permissionCode }}</strong>
