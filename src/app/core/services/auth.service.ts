@@ -2,10 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { ApiResponse, AuthenticationResponse, LoginRequest } from '../models/api.model';
+import {
+  ApiResponse,
+  AuthenticationResponse,
+  LoginRequest,
+  UserProfile,
+} from '../models/api.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private http = inject(HttpClient);
@@ -13,13 +18,29 @@ export class AuthService {
   private apiUrl = 'http://localhost:8080/auth';
 
   login(request: LoginRequest): Observable<ApiResponse<AuthenticationResponse>> {
-    return this.http.post<ApiResponse<AuthenticationResponse>>(`${this.apiUrl}/token`, request).pipe(
-      tap(res => {
-        if (res.result && res.result.token) {
-          this.saveToken(res.result.token, request.userName);
+    return this.http
+      .post<ApiResponse<AuthenticationResponse>>(`${this.apiUrl}/token`, request)
+      .pipe(
+        tap((res) => {
+          if (res.result && res.result.token) {
+            this.saveToken(res.result.token, request.userName);
+          }
+        }),
+      );
+  }
+  loadUserProfile(): Observable<ApiResponse<UserProfile>> {
+    return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/../users/my-profile`).pipe(
+      tap((res) => {
+        if (res.result) {
+          localStorage.setItem('user_profile', JSON.stringify(res.result));
+          localStorage.setItem('permissions', JSON.stringify(res.result.permissions || []));
         }
-      })
+      }),
     );
+  }
+  getUserPermissions(): string[] {
+    const perms = localStorage.getItem('permissions');
+    return perms ? JSON.parse(perms) : [];
   }
 
   saveToken(token: string, username: string): void {
@@ -32,7 +53,7 @@ export class AuthService {
     if (token) {
       this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
         next: () => this.clearSession(),
-        error: () => this.clearSession()
+        error: () => this.clearSession(),
       });
     } else {
       this.clearSession();
@@ -42,6 +63,8 @@ export class AuthService {
   clearSession(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('username');
+    localStorage.removeItem('permissions');
+    localStorage.removeItem('user_profile');
     this.router.navigate(['/login']);
   }
 

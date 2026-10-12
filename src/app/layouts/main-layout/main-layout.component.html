@@ -10,13 +10,14 @@
       </div>
 
       <nav class="nav-menu">
-        <a routerLink="/users" routerLinkActive="active" class="nav-item">
+        <a routerLink="/users" routerLinkActive="active" class="nav-item" *hasPermission="['USER_VIEWER', 'USER_CHECKER', 'USER_MAKER']">
+
           <span>Người Dùng</span>
         </a>
-        <a routerLink="/roles" routerLinkActive="active" class="nav-item">
+        <a routerLink="/roles" routerLinkActive="active" class="nav-item" *hasPermission="['ROLE_VIEWER', 'ROLE_CHECKER', 'ROLE_MAKER']">
           <span>Vai Trò</span>
         </a>
-        <a routerLink="/permissions" routerLinkActive="active" class="nav-item">
+        <a routerLink="/permissions" routerLinkActive="active" class="nav-item"  *hasPermission="['PERMISSION_VIEWER', 'PERMISSION_CHECKER', 'PERMISSION_MAKER']">
           <span>Quyền Hạn</span>
         </a>
       </nav>

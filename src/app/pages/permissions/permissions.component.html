@@ -4,7 +4,7 @@
   </div>
 
   <!-- Form Tạo Permission -->
-  <div class="card form-card">
+  <div class="card form-card" *hasPermission="['PERMISSION_MAKER']">
     <div class="card-title-box">
       <h3>Thêm Mới Quyền Hạn</h3>
     </div>
@@ -82,15 +82,15 @@
                 </button>
 
                 <div class="action-dropdown" *ngIf="activeMenuId === p.permissionCode">
-                  <button type="button" class="action-item" (click)="openDetail(p, $event)">
+                  <button type="button" class="action-item"  *hasPermission="['PERMISSION_VIEWER', 'PERMISSION_CHECKER', 'PERMISSION_MAKER']"  (click)="openDetail(p, $event)">
 
                     <span>Xem chi tiết</span>
                   </button>
-                  <button type="button" class="action-item" (click)="openEdit(p, $event)">
+                  <button type="button" class="action-item" *hasPermission="['PERMISSION_MAKER']" (click)="openEdit(p, $event)">
                     <span>Chỉnh sửa</span>
                   </button>
                   <div class="action-divider"></div>
-                  <button type="button" class="action-item action-item-danger" (click)="openDeleteModal(p.permissionCode, $event)">
+                  <button type="button" class="action-item action-item-danger" *hasPermission="['PERMISSION_MAKER']"  (click)="openDeleteModal(p.permissionCode, $event)">
                     <span>Xóa</span>
                   </button>
                 </div>
@@ -165,7 +165,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Đóng</button>
-        <button type="button" class="btn btn-primary" (click)="openEdit(detailPermission); closeDetailModal()">
+        <button type="button" class="btn btn-primary" *hasPermission="['PERMISSION_MAKER']" (click)="openEdit(detailPermission); closeDetailModal()">
           Chỉnh Sửa
         </button>
       </div>

@@ -11,11 +11,12 @@ import {
   SearchRequest,
   RoleFilterRequest,
 } from '../../core/models/api.model';
+import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
 
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,HasPermissionDirective],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.css'
 })

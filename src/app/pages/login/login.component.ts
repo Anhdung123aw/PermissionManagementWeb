@@ -39,7 +39,16 @@ export class LoginComponent {
       next: (res) => {
         this.loading = false;
         if (res.result && res.result.authenticated) {
-          this.router.navigate(['/users']);
+          this.authService.loadUserProfile().subscribe({
+              next: () => {
+                this.loading = false;
+                this.router.navigate(['/users']);
+              },
+              error: () => {
+                this.loading = false;
+                this.router.navigate(['/users']);
+              }
+        });
         } else {
           this.errorMessage = 'Đăng nhập không thành công. Vui lòng kiểm tra lại!';
         }
@@ -49,5 +58,7 @@ export class LoginComponent {
         this.errorMessage = err.error?.message || 'Lỗi xác thực: Không thể kết nối hoặc sai thông tin đăng nhập!';
       }
     });
+
+
   }
 }

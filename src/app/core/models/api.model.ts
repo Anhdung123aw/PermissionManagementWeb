@@ -93,3 +93,11 @@ export interface PermissionUpdateRequest {
   permissionName?: string;
   description?: string;
 }
+export interface UserProfile {
+  id: number;
+  userName: string;
+  email?: string;
+  roles: string[];
+  permissions: string[];
+}
+

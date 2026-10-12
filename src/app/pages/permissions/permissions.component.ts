@@ -8,11 +8,12 @@ import {
   SearchRequest,
   PermissionFilterRequest,
 } from '../../core/models/api.model';
+import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
 
 @Component({
   selector: 'app-permissions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,HasPermissionDirective],
   templateUrl: './permissions.component.html',
   styleUrl: './permissions.component.css'
 })

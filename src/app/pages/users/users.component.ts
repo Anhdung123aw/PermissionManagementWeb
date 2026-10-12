@@ -11,11 +11,12 @@ import {
   SearchRequest,
   UserFilterRequest,
 } from '../../core/models/api.model';
+import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HasPermissionDirective],
   templateUrl: './users.component.html',
   styleUrl: './users.component.css',
 })
