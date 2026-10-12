@@ -83,16 +83,14 @@
 
                 <div class="action-dropdown" *ngIf="activeMenuId === p.permissionCode">
                   <button type="button" class="action-item" (click)="openDetail(p, $event)">
-                    <span class="action-icon">👁️</span>
+
                     <span>Xem chi tiết</span>
                   </button>
                   <button type="button" class="action-item" (click)="openEdit(p, $event)">
-                    <span class="action-icon">✏️</span>
                     <span>Chỉnh sửa</span>
                   </button>
                   <div class="action-divider"></div>
                   <button type="button" class="action-item action-item-danger" (click)="openDeleteModal(p.permissionCode, $event)">
-                    <span class="action-icon">🗑️</span>
                     <span>Xóa</span>
                   </button>
                 </div>

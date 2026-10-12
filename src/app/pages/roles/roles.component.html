@@ -134,16 +134,13 @@
 
                 <div class="action-dropdown" *ngIf="activeMenuId === r.roleCode">
                   <button type="button" class="action-item" (click)="openDetail(r, $event)">
-                    <span class="action-icon">👁️</span>
                     <span>Xem chi tiết</span>
                   </button>
                   <button type="button" class="action-item" (click)="openEdit(r, $event)">
-                    <span class="action-icon">✏️</span>
                     <span>Chỉnh sửa</span>
                   </button>
                   <div class="action-divider"></div>
                   <button type="button" class="action-item action-item-danger" (click)="openDeleteModal(r.roleCode, $event)">
-                    <span class="action-icon">🗑️</span>
                     <span>Xóa</span>
                   </button>
                 </div>

@@ -3,11 +3,6 @@
   <header class="app-header">
     <div class="header-container">
       <div class="brand-section">
-        <div class="brand-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-        </div>
         <div class="brand-text">
           <span class="brand-title">PERMISSION MANAGEMENT</span>
           <span class="brand-subtitle">Hệ thống Phân quyền </span>
@@ -16,15 +11,12 @@
 
       <nav class="nav-menu">
         <a routerLink="/users" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">👤</span>
           <span>Người Dùng</span>
         </a>
         <a routerLink="/roles" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">🛡️</span>
           <span>Vai Trò</span>
         </a>
         <a routerLink="/permissions" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">🔑</span>
           <span>Quyền Hạn</span>
         </a>
       </nav>
@@ -57,12 +49,4 @@
       <router-outlet></router-outlet>
     </div>
   </main>
-
-<!--  &lt;!&ndash; Footer &ndash;&gt;-->
-<!--  <footer class="app-footer">-->
-<!--    <div class="footer-container">-->
-<!--      <span>© 2026 VIETABANK - HỆ THỐNG BẢO MẬT PHÂN QUYỀN VAB TASK. TẤT CẢ CÁC QUYỀN ĐƯỢC BẢO LƯU.</span>-->
-<!--      <span class="tech-stack">Spring Boot 3 • Nimbus HS512 • Redis PBAC • Angular Standalone</span>-->
-<!--    </div>-->
-<!--  </footer>-->
 </div>
