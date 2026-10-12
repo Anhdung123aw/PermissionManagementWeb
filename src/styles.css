@@ -701,7 +701,7 @@ button, input, select, textarea {
 .action-dropdown {
   position: absolute;
   right: 0;
-  top: -4px;
+  top: -38px;
   background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 10px;
